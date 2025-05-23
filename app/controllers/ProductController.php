@@ -1,88 +1,96 @@
 <?php
-require_once 'app/models/ProductModel.php';
+// Require SessionHelper and other necessary files
+require_once('app/config/database.php');
+require_once('app/models/ProductModel.php');
+require_once('app/models/CategoryModel.php');
 class ProductController
 {
-    private $products = [];
+    private $productModel;
+    private $db;
     public function __construct()
     {
-        // Giả sử chúng ta lưu trữ sản phẩm trong session để giữ lại khi làm mới trang
-        session_start();
-        if (isset($_SESSION['products'])) {
-            $this->products = $_SESSION['products'];
-        }
+        $this->db = (new Database())->getConnection();
+        $this->productModel = new ProductModel($this->db);
     }
     public function index()
     {
-        $this->list();
-    }
-    public function list()
-    {
-        // Hiển thị danh sách sản phẩm
-        $products = $this->products;
+        $products = $this->productModel->getProducts();
         include 'app/views/product/list.php';
+    }
+    public function show($id)
+    {
+        $product = $this->productModel->getProductById($id);
+        if ($product) {
+            include 'app/views/product/show.php';
+        } else {
+            echo "Không thấy sản phẩm.";
+        }
     }
     public function add()
     {
-        $errors = [];
+        $categories = (new CategoryModel($this->db))->getCategories();
+        include_once 'app/views/product/add.php';
+    }
+    public function save()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $name = $_POST['name'];
-            $description = $_POST['description'];
-            $price = $_POST['price'];
-            // Kiểm tra tên sản phẩm
-            if (empty($name)) {
-                $errors[] = 'Tên sản phẩm là bắt buộc.';
-            } elseif (strlen($name) < 10 || strlen($name) > 100) {
-                $errors[] = 'Tên sản phẩm phải có từ 10 đến 100 ký tự.';
-            }
-            // Kiểm tra giá
-            if (!is_numeric($price) || $price <= 0) {
-                $errors[] = 'Giá phải là một số dương lớn hơn 0.';
-            }
-            if (empty($errors)) {
-                $id = count($this->products) + 1;
-                $product = new ProductModel($id, $name, $description, $price);
-                $this->products[] = $product;
-                $_SESSION['products'] = $this->products;
-                header('Location: /Project_1/Product/list');
-                exit();
+            $name = $_POST['name'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $price = $_POST['price'] ?? '';
+            $category_id = $_POST['category_id'] ?? null;
+            $result = $this->productModel->addProduct(
+                $name,
+                $description,
+                $price,
+                $category_id
+            );
+            if (is_array($result)) {
+                $errors = $result;
+                $categories = (new CategoryModel($this->db))->getCategories();
+                include 'app/views/product/add.php';
+            } else {
+                header('Location:/Project_2/Product');
             }
         }
-        include 'app/views/product/add.php';
     }
     public function edit($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            foreach ($this->products as $key => $product) {
-                if ($product->getID() == $id) {
-                    $this->products[$key]->setName($_POST['name']);
-                    $this->products[$key]->setDescription($_POST['description']);
-                    $this->products[$key]->setPrice($_POST['price']);
-                    break;
-                }
-            }
-            $_SESSION['products'] = $this->products;
-            header('Location: /Project_1/Product/list');
-            exit();
+        $product = $this->productModel->getProductById($id);
+        $categories = (new CategoryModel($this->db))->getCategories();
+        if ($product) {
+            include 'app/views/product/edit.php';
+        } else {
+            echo "Không thấy sản phẩm.";
         }
-        foreach ($this->products as $product) {
-            if ($product->getID() == $id) {
-                include 'app/views/product/edit.php';
-                return;
+    }
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'];
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $price = $_POST['price'];
+            $category_id = $_POST['category_id'];
+            $edit = $this->productModel->updateProduct(
+                $id,
+                $name,
+                $description,
+                $price,
+                $category_id
+            );
+            if ($edit) {
+                header('Location:/Project_2/Product');
+            } else {
+                echo "Đã xảy ra lỗi khi lưu sản phẩm.";
             }
         }
-        die('Product not found');
     }
     public function delete($id)
     {
-        foreach ($this->products as $key => $product) {
-            if ($product->getID() == $id) {
-                unset($this->products[$key]);
-                break;
-            }
+        if ($this->productModel->deleteProduct($id)) {
+            header('Location:/Project_2/Product');
+        } else {
+            echo "Đã xảy ra lỗi khi xóa sản phẩm.";
         }
-        $this->products = array_values($this->products);
-        $_SESSION['products'] = $this->products;
-        header('Location: /Project_1/Product/list');
-        exit();
     }
 }
