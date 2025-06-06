@@ -1,5 +1,24 @@
 <?php include 'app/views/shares/header.php'; ?>
 
+<div class="content-wrapper">
+
+<?php if (!isset($product) || !$product): ?>
+    <div class="alert alert-danger">
+        <h4>Lỗi!</h4>
+        <p>Không tìm thấy sản phẩm cần sửa.</p>
+        <a href="/Project_4/Product" class="btn btn-primary">Quay lại danh sách sản phẩm</a>
+    </div>
+    <?php include 'app/views/shares/footer.php'; exit; ?>
+<?php endif; ?>
+
+<?php if (!isset($categories)): ?>
+    <div class="alert alert-warning">
+        <h4>Cảnh báo!</h4>
+        <p>Không thể tải danh mục sản phẩm.</p>
+    </div>
+    <?php $categories = []; ?>
+<?php endif; ?>
+
 <h1 class="mb-4">Sửa sản phẩm</h1>
 
 
@@ -7,8 +26,8 @@
 
 <div class="card shadow">
     <div class="card-body">
-        <form method="POST" action="/Project_3/Product/update" class="needs-validation" enctype="multipart/form-data" novalidate>
-            <input type="hidden" name="id" value="<?php echo $product->id; ?>">
+        <form method="POST" action="/Project_4/Product/edit/<?php echo isset($product) && is_object($product) ? $product->id : ''; ?>" class="needs-validation" enctype="multipart/form-data" novalidate>
+            <input type="hidden" name="id" value="<?php echo isset($product) && is_object($product) ? $product->id : ''; ?>">
             
             <div class="mb-3">
                 <label for="name" class="form-label">Tên sản phẩm:</label>
@@ -32,10 +51,17 @@
             </div>
             
             <div class="mb-3">
+                <label for="stock_quantity" class="form-label">Số lượng tồn kho:</label>
+                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" 
+                       value="<?php echo htmlspecialchars($product->stock_quantity ?? 0, ENT_QUOTES, 'UTF-8'); ?>" min="0" required>
+                <div class="form-text">Số lượng sản phẩm hiện có trong kho</div>
+            </div>
+            
+            <div class="mb-3">
                 <label for="image" class="form-label">Hình ảnh sản phẩm:</label>
                 <?php if (!empty($product->image)): ?>
                     <div class="mb-2">
-                        <img src="/Project_3/public/uploads/<?php echo htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8'); ?>" 
+                        <img src="/Project_4/public/uploads/<?php echo htmlspecialchars($product->image, ENT_QUOTES, 'UTF-8'); ?>" 
                              alt="<?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>" 
                              class="img-thumbnail" style="max-height: 150px;">
                     </div>
@@ -58,7 +84,7 @@
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/Project_3/Product" class="btn btn-light me-md-2">
+                <a href="/Project_4/Product" class="btn btn-light me-md-2">
                     <i class="bi bi-arrow-left"></i> Quay lại
                 </a>
                 <button type="submit" class="btn btn-primary">
@@ -99,5 +125,7 @@ CKEDITOR.replace('description', {
     });
 })();
 </script>
+
+</div>
 
 <?php include 'app/views/shares/footer.php'; ?>

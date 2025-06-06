@@ -4,7 +4,7 @@
 
 <div class="card shadow">
     <div class="card-body">
-        <form method="POST" action="/Project_3/Category/update" class="needs-validation" novalidate>
+        <form method="POST" action="/Project_4/Category/update" class="needs-validation" novalidate>
             <input type="hidden" name="id" value="<?php echo $category->id; ?>">
             
             <div class="mb-3">
@@ -20,7 +20,7 @@
             </div>
             
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/Project_3/Category" class="btn btn-light me-md-2">
+                <a href="/Project_4/Category" class="btn btn-light me-md-2">
                     <i class="bi bi-arrow-left"></i> Quay lại
                 </a>
                 <button type="submit" class="btn btn-primary">

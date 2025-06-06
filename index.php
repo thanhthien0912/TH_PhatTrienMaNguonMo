@@ -2,11 +2,24 @@
 // Start session at the beginning of each request
 session_start();
 
+// Include database configuration
+require_once 'app/config/database.php';
+
+// Create database connection
+$database = new Database();
+$db = $database->getConnection();
+
 // Get URL parameter
 $url = $_GET['url'] ?? '';
 $url = rtrim($url, '/');
 $url = filter_var($url, FILTER_SANITIZE_URL);
 $url = explode('/', $url);
+
+// If no URL is provided, show home page
+if (empty($url[0])) {
+    include 'home.php';
+    exit();
+}
 
 // Determine controller name - default to ProductController if empty
 $controllerName = isset($url[0]) && $url[0] != '' ? ucfirst($url[0]) . 'Controller' : 'ProductController';
@@ -33,7 +46,12 @@ if (!class_exists($controllerName)) {
     die('Controller class not found: ' . $controllerName);
 }
 
-$controller = new $controllerName();
+// Create controller instance with database connection
+if ($controllerName === 'UserController' || $controllerName === 'ProductController' || $controllerName === 'CategoryController') {
+    $controller = new $controllerName($db);
+} else {
+    $controller = new $controllerName();
+}
 
 // Check if action method exists
 if (!method_exists($controller, $action)) {

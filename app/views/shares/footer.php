@@ -6,12 +6,13 @@
             <div class="col-md-6">
                 <h5 class="mb-3 fw-bold">Ứng dụng quản lý sản phẩm</h5>
                 <p class="text-muted">Hệ thống quản lý sản phẩm và danh mục hiệu quả, dễ sử dụng.</p>
-            </div>
-            <div class="col-md-3">
+            </div>            <div class="col-md-3">
                 <h5 class="mb-3 fw-bold">Liên kết</h5>
                 <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="/Project_3/Product/" class="nav-link p-0 text-muted">Sản phẩm</a></li>
-                    <li class="nav-item mb-2"><a href="/Project_3/Category/" class="nav-link p-0 text-muted">Danh mục</a></li>
+                    <li class="nav-item mb-2"><a href="/Project_4/Product/" class="nav-link p-0 text-muted">Sản phẩm</a></li>
+                    <li class="nav-item mb-2"><a href="/Project_4/Category/" class="nav-link p-0 text-muted">Danh mục</a></li>
+                    <li class="nav-item mb-2"><a href="/Project_4/Product/cart" class="nav-link p-0 text-muted">Giỏ hàng</a></li>
+                    <li class="nav-item mb-2"><a href="/Project_4/Product/orders" class="nav-link p-0 text-muted">Đơn hàng</a></li>
                 </ul>
             </div>
             <div class="col-md-3">
